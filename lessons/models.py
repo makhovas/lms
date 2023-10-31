@@ -31,13 +31,13 @@ class Lesson(models.Model):
         verbose_name_plural = 'уроки'
 
 
-class LessonsQty(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, blank=True, related_name='lessonsqty')
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True, related_name='lessonsqty')
-    lessonsqty = models.PositiveIntegerField(verbose_name='количество уроков')
+class Quantity(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, blank=True, related_name='quantity')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True, related_name='quantity')
+    quantity = models.PositiveIntegerField(verbose_name='количество уроков')
 
     def __str__(self):
-        return f'{self.lesson if self.lesson else self.course} - {self.lessonsqty}'
+        return f'{self.lesson if self.lesson else self.course} - {self.quantity}'
 
     class Meta:
         verbose_name = 'количество уроков'
@@ -45,12 +45,18 @@ class LessonsQty(models.Model):
 
 
 class Payments(models.Model):
+    CASH = "Cash"
+    BANK = "Bank"
+    PAYMENT_CHOICES = [
+        (CASH, "Cash"),
+        (BANK, "Bank"),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
     payment_date = models.DateTimeField(auto_now_add=True, verbose_name='дата оплаты')
     paid_course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='оплаченный курс')
     paid_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name='оплаченный урок')
     payment_amount = models.PositiveIntegerField(verbose_name='сумма оплаты')
-    payment_type = models.TextField(default=True, verbose_name='способ оплаты: наличные или перевод')
+    payment_type = models.CharField(choices=PAYMENT_CHOICES, default=CASH, verbose_name='способ оплаты: наличные или перевод')
 
     def __str__(self):
         return f'{self.paid_lesson if self.paid_lesson else self.paid_course} - {self.payment_date}'

@@ -1,19 +1,25 @@
 from rest_framework import serializers
 
-from lessons.models import Course, Lesson, LessonsQty
+from lessons.models import Course, Lesson, Quantity
 
 
-class LessonsQtySerializer(serializers.ModelSerializer):
+class QuantitySerializer(serializers.ModelSerializer):
     class Meta:
-        model = LessonsQty
+        model = Quantity
         fields = '__all__'
 
 
 class LessonSerializer(serializers.ModelSerializer):
+    quantity = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
         fields = '__all__'
+
+    def get_quantity(self, instance):
+        if instance.quantity.all():
+            return instance.quantity.all().quantity
+        return 0
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -24,47 +30,25 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CourseQuantitySerializer(serializers.ModelSerializer):
+    quantity = CourseSerializer()
 
+    class Meta:
+        model = Quantity
+        fields = ('quantity', 'course', 'lesson',)
 
 
 class LessonCreateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Lesson
         fields = '__all__'
 
     def create(self, validated_data):
-        lessonsqty = validated_data.pop('lessonsqty')
+        quantity = validated_data.pop('quantity')
 
         lesson_item = Lesson.objects.create(**validated_data)
 
-        for q in lessonsqty:
-            LessonsQty.objects.create(**q, lesson=lesson_item)
+        for q in quantity:
+            Lesson.objects.create(**q, lesson=lesson_item)
 
         return lesson_item
-
-
-class CourseLessonsQtySerializer(serializers.ModelSerializer):
-    course = CourseSerializer()
-
-    class Meta:
-        model = LessonsQty
-        fields = ('lessonsqty', 'course', 'lesson',)
-
-
-class CourseCreateSerializer(serializers.ModelSerializer):
-    lessonsqty = LessonsQtySerializer(many=True)
-
-    class Meta:
-        model = Course
-        fields = '__all__'
-
-    def create(self, validated_data):
-        lessonsqty = validated_data.pop('lessonsqty')
-
-        course_item = Course.objects.create(**validated_data)
-
-        for q in lessonsqty:
-            LessonsQty.objects.create(**q, course=course_item)
-
-        return course_item
