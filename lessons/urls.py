@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from lessons.apps import LessonsConfig
 from rest_framework.routers import DefaultRouter
@@ -20,4 +20,5 @@ urlpatterns = [
     path('quantity/create/', QuantityCreateAPIView.as_view(), name='quantity-create'),
     path('quantity/', QuantityListAPIView.as_view(), name='quantity-list'),
     path('course/quantity/', CourseQuantityListAPIView.as_view(), name='course-quantity'),
+    path('users/', include('users.urls', namespace='users')),
 ] + router.urls

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from users.models import User
@@ -8,6 +9,7 @@ class Course(models.Model):
     title = models.CharField(max_length=150, verbose_name='название курса')
     preview = models.ImageField(upload_to='lessons/', verbose_name='превью курса', null=True, blank=True)
     description = models.TextField(verbose_name='описание курса')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f'{self.title}'
@@ -22,6 +24,7 @@ class Lesson(models.Model):
     preview = models.ImageField(upload_to='lessons/', verbose_name='превью урока', null=True, blank=True)
     link = models.URLField(verbose_name='ссылка на видео', null=True, blank=True)
     description = models.TextField(verbose_name='описание урока')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f'{self.title}'
@@ -57,6 +60,7 @@ class Payments(models.Model):
     paid_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name='оплаченный урок')
     payment_amount = models.PositiveIntegerField(verbose_name='сумма оплаты')
     payment_type = models.CharField(choices=PAYMENT_CHOICES, default=CASH, verbose_name='способ оплаты: наличные или перевод')
+    #owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f'{self.paid_lesson if self.paid_lesson else self.paid_course} - {self.payment_date}'

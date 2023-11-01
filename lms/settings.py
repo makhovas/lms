@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'users',
     'lessons',
     'django_filters',
+    'rest_framework_simplejwt',
+
 ]
 
 MIDDLEWARE = [
@@ -167,3 +169,12 @@ if CACHE_ENABLED:
             "LOCATION": os.getenv('CACHE_LOCATION'),
         }
     }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}

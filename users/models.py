@@ -4,9 +4,16 @@ from django.core.mail import send_mail
 from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
+
+
+class UserRoles(models.TextChoices):
+    MEMBER = 'member', _('member')
+    MODERATOR = 'moderator', _('moderator')
 
 
 # Create your models here.
+
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, verbose_name='почта')
@@ -16,6 +23,8 @@ class User(AbstractUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+
+    role = models.CharField(max_length=9, choices=UserRoles.choices, default=UserRoles.MEMBER)
 
 
 class EmailVerification(models.Model):
