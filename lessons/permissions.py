@@ -1,10 +1,12 @@
 from rest_framework.permissions import BasePermission
 
+from users.models import UserRoles
+
 
 class IsOwnerorStaff(BasePermission):
 
     def has_permission(self, request, view):
-        if request.user.is_staff:
+        if request.user.role == UserRoles.MODERATOR:
             return True
 
-        return request.user == view.get_object().owner
+        return False
