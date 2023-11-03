@@ -5,7 +5,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 
 from lessons.models import Course, Lesson, Quantity
-from lessons.permissions import IsOwnerorStaff
+from lessons.permissions import IsOwner, IsModerator
 from lessons.serializers import CourseSerializer, LessonSerializer, QuantitySerializer, CourseQuantitySerializer
 
 
@@ -13,12 +13,12 @@ from lessons.serializers import CourseSerializer, LessonSerializer, QuantitySeri
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwner | IsModerator]
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializer
-    permission_classes = [IsOwnerorStaff]
+    permission_classes = [IsAuthenticated, IsModerator]
 
     def perform_create(self, serializer):
         new_lesson = serializer.save()
@@ -35,18 +35,18 @@ class LessonListAPIView(generics.ListAPIView):
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
-    permission_classes = [IsAuthenticated, IsOwnerorStaff]
+    permission_classes = [IsAuthenticated, IsOwner, IsModerator]
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
-    permission_classes = [IsAuthenticated, IsOwnerorStaff]
+    permission_classes = [IsAuthenticated, IsModerator]
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
     queryset = Lesson.objects.all()
-    permission_classes = [IsOwnerorStaff]
+    permission_classes = [IsAuthenticated, IsModerator]
 
 
 class QuantityCreateAPIView(generics.CreateAPIView):
