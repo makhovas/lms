@@ -13,7 +13,20 @@ from lessons.serializers import CourseSerializer, LessonSerializer, QuantitySeri
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
-    permission_classes = [IsAuthenticated, IsOwner | IsModerator]
+
+    def get_permissions(self):
+        """Права доступа"""
+        if self.action == 'retrieve':
+            permission_classes = [IsAuthenticated, IsOwner | IsModerator]
+        elif self.action == 'create':
+            permission_classes = [IsAuthenticated, IsModerator]
+        elif self.action == 'destroy':
+            permission_classes = [IsAuthenticated, IsModerator]
+        elif self.action == 'update':
+            permission_classes = [IsAuthenticated, IsModerator]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
