@@ -24,6 +24,7 @@ class Lesson(models.Model):
     preview = models.ImageField(upload_to='lessons/', verbose_name='превью урока', null=True, blank=True)
     link = models.URLField(verbose_name='ссылка на видео', null=True, blank=True)
     description = models.TextField(verbose_name='описание урока')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
@@ -34,17 +35,17 @@ class Lesson(models.Model):
         verbose_name_plural = 'уроки'
 
 
-class Quantity(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, blank=True, related_name='quantity')
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True, related_name='quantity')
-    quantity = models.PositiveIntegerField(verbose_name='количество уроков')
-
-    def __str__(self):
-        return f'{self.lesson if self.lesson else self.course} - {self.quantity}'
-
-    class Meta:
-        verbose_name = 'количество уроков'
-        verbose_name_plural = 'количество уроков'
+# class Quantity(models.Model):
+#     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, blank=True, related_name='quantity')
+#     course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True, related_name='quantity')
+#     quantity = models.PositiveIntegerField(verbose_name='количество уроков')
+#
+#     def __str__(self):
+#         return f'{self.lesson if self.lesson else self.course} - {self.quantity}'
+#
+#     class Meta:
+#         verbose_name = 'количество уроков'
+#         verbose_name_plural = 'количество уроков'
 
 
 class Payments(models.Model):
@@ -69,3 +70,8 @@ class Payments(models.Model):
         verbose_name = 'платеж'
         verbose_name_plural = 'платежи'
         ordering = ('-payment_date',)
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='курс')

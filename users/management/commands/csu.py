@@ -12,7 +12,7 @@ class Command(BaseCommand):
     help = 'Удалить всех пользователей и группы и создать суперюзера и группу менеджер'
 
     def handle(self, *args, **kwargs):
-        Group.objects.all().delete()
+        #Group.objects.all().delete()
         User.objects.all().delete()
         user = User.objects.create(
             email=settings.EMAIL_HOST_USER,
@@ -24,11 +24,11 @@ class Command(BaseCommand):
         )
         user.set_password('24586744')
         user.save()
-        with open(BASE_DIR / 'users/fixtures/groups_fixture.json', 'r', encoding='cp1251') as file:
-            group_data = json.load(file)
-            for item in group_data:
-                group = Group.objects.create(
-                    pk=item['pk'],
-                    name=item['fields']['name'],
-                )
-                group.permissions.set(item['fields']['permissions'])
+        # with open(BASE_DIR / 'users/fixtures/groups_fixture.json', 'r', encoding='cp1251') as file:
+        #     group_data = json.load(file)
+        #     for item in group_data:
+        #         group = Group.objects.create(
+        #             pk=item['pk'],
+        #             name=item['fields']['name'],
+        #         )
+        #         group.permissions.set(item['fields']['permissions'])
