@@ -73,7 +73,7 @@ class SubscriptionTests(APITestCase):
         self.assertTrue(Subscription.objects.filter(user=self.user, course=self.course).exists())
 
     def test_unsubscribe_from_course(self):
-        subscription = Subscription.objects.create(user=self.user, course=self.course)
+        Subscription.objects.create(user=self.user, course=self.course)
         link = reverse('lessons:delete-subscription', args=[self.course.id])
         response = self.client.delete(link, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
