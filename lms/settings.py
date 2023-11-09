@@ -189,3 +189,5 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://read-and-write.example.com",
 ]
+
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')

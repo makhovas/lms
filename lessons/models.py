@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+from lessons.services import get_stripe_session
 from users.models import User
 
 
@@ -60,8 +61,10 @@ class Payments(models.Model):
     paid_course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='оплаченный курс')
     paid_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, verbose_name='оплаченный урок')
     payment_amount = models.PositiveIntegerField(verbose_name='сумма оплаты')
-    payment_type = models.CharField(choices=PAYMENT_CHOICES, default=CASH, verbose_name='способ оплаты: наличные или перевод')
-    #owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    payment_type = models.CharField(choices=PAYMENT_CHOICES, default=BANK,
+                                    verbose_name='способ оплаты: наличные или перевод')
+    # owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    session = models.CharField(max_length=100, verbose_name='сессия', unique=True, null=True, blank=True)
 
     def __str__(self):
         return f'{self.paid_lesson if self.paid_lesson else self.paid_course} - {self.payment_date}'
@@ -70,6 +73,15 @@ class Payments(models.Model):
         verbose_name = 'платеж'
         verbose_name_plural = 'платежи'
         ordering = ('-payment_date',)
+
+    def save(self, *args, **kwargs):
+        # Check if the session is not already set
+        if not self.session:
+            # Generate the Stripe session
+            stripe_session = get_stripe_session(self.paid_course or self.paid_lesson, self.user, self.payment_amount)
+            self.session = stripe_session.id
+
+        super().save(*args, **kwargs)
 
 
 class Subscription(models.Model):

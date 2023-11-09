@@ -5,10 +5,11 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
-from lessons.models import Course, Lesson, Subscription
+from lessons.models import Course, Lesson, Subscription, Payments
 from lessons.paginators import LessonPaginator, CoursePaginator
 from lessons.permissions import IsOwner, IsModerator
-from lessons.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer, LessonCreateSerializer
+from lessons.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer, LessonCreateSerializer, \
+    PaymentsSerializer
 
 
 # Create your views here.
@@ -30,6 +31,11 @@ class CourseViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
+
+
+class PaymentsViewSet(viewsets.ModelViewSet):
+    serializer_class = PaymentsSerializer
+    queryset = Payments.objects.all()
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
@@ -113,3 +119,5 @@ class SubscriptionDestroyAPIView(generics.DestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({'detail': 'Вы успешно отписались от курса.'}, status=status.HTTP_200_OK)
+
+

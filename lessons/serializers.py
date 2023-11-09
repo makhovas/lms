@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
-from lessons.models import Course, Lesson, Subscription
+from lessons.models import Course, Lesson, Subscription, Payments
+from lessons.services import get_session_by_stripe_id
 from lessons.validators import LinkValidator
 
 
@@ -74,3 +75,15 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = '__all__'
+
+
+class PaymentsSerializer(serializers.ModelSerializer):
+    url = SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Payments
+        fields = '__all__'
+
+    def get_url(self, obj):
+        session = get_session_by_stripe_id(obj.session)
+        return session.url
