@@ -1,4 +1,8 @@
+import json
+from datetime import datetime, timedelta
+
 import stripe
+from django_celery_beat.models import IntervalSchedule, PeriodicTask
 
 from lms.settings import STRIPE_SECRET_KEY
 
@@ -32,3 +36,20 @@ def get_session_by_stripe_id(stripe_id) -> dict:
     """ return session from stripe API"""
     stripe.api_key = STRIPE_SECRET_KEY
     return stripe.checkout.Session.retrieve(stripe_id)
+
+
+# def set_schedule(*args, **kwargs):
+#     schedule, created = IntervalSchedule.objects.get_or_create(
+#         every=10,
+#         period=IntervalSchedule.SECONDS,
+#     )
+#     PeriodicTask.objects.create(
+#         interval=schedule,  # we created this above.
+#         name='send email about update',  # simply describes this periodic task.
+#         task='lessons.tasks.send_email_course_updated',  # name of task.
+#         args=json.dumps(['arg1', 'arg2']),
+#         kwargs=json.dumps({
+#             'be_careful': True,
+#         }),
+#         expires=datetime.utcnow() + timedelta(seconds=30)
+#     )

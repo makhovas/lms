@@ -10,6 +10,7 @@ from lessons.paginators import LessonPaginator, CoursePaginator
 from lessons.permissions import IsOwner, IsModerator
 from lessons.serializers import CourseSerializer, LessonSerializer, SubscriptionSerializer, LessonCreateSerializer, \
     PaymentsSerializer
+from lessons.tasks import send_email_course_updated
 
 
 # Create your views here.
@@ -31,6 +32,10 @@ class CourseViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
+
+    def perform_update(self, serializer):
+        updated_course = serializer.save()
+        send_email_course_updated.delay(updated_course.pk)
 
 
 class PaymentsViewSet(viewsets.ModelViewSet):
@@ -119,5 +124,3 @@ class SubscriptionDestroyAPIView(generics.DestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({'detail': 'Вы успешно отписались от курса.'}, status=status.HTTP_200_OK)
-
-
