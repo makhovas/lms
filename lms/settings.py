@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from datetime import timedelta
+from urllib.parse import urlsplit
 
 from django.core.cache.backends import redis
 
@@ -32,7 +33,9 @@ SECRET_KEY = 'django-insecure-%0!-lpr5k_ce=)k#nz_@_+89ah%4nl@x+-tw=18x(uys*!w0aj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+DOMAIN_NAME = os.getenv('DOMAIN_NAME')
+
+ALLOWED_HOSTS = [urlsplit(DOMAIN_NAME).hostname]
 
 # Application definition
 
@@ -91,14 +94,15 @@ WSGI_APPLICATION = 'lms.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'lms',
-        'USER': 'postgres',
-        'PASSWORD': 24586744,
-        'PORT': 5432,
-        'HOST': '127.0.0.1',
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'PORT': '5432',
+        'HOST': os.getenv('DB_HOST'),
 
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -193,8 +197,8 @@ CSRF_TRUSTED_ORIGINS = [
 
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_HOST')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_BROKER_HOST')
 
 CELERY_BEAT_SCHEDULE = {
     'task-name': {
