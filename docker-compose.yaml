@@ -25,7 +25,7 @@ services:
     command:
       - "docker/app.sh"
     ports:
-      - 7777:8000
+      - 8000:8000
 
   celery:
     build: .
